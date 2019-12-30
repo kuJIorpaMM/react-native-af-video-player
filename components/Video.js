@@ -114,6 +114,18 @@ class Video extends Component {
         }
       }
     })
+
+    Orientation.getOrientation((e, orientation) => {
+      this.setState({ fullScreen: true }, () => {
+        this.props.onFullScreen(this.state.fullScreen)
+        const initialOrient = Orientation.getInitialOrientation()
+        const height = orientation !== initialOrient ?
+            Win.width : Win.height
+        this.animToFullscreen(height)
+        if (this.props.rotateToFullScreen) Orientation.lockToLandscape()
+      })
+    })
+
   }
 
   // onBuffer() {
@@ -157,7 +169,11 @@ class Video extends Component {
     } else {
       this.animToInline()
     }
-    if (this.state.fullScreen) this.animToFullscreen(height)
+    if (orientation === 'LANDSCAPE') {
+      if (this.state.fullScreen) this.animToFullscreen(height)
+    } else {
+      if (this.state.fullScreen) this.animToFullscreen(width)
+    }
   }
 
   onSeekRelease(percent) {
